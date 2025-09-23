@@ -2,7 +2,7 @@
   <div class="vpn-bg">
     <header>
       <nav class="navbar" aria-label="Main navigation">
-        <div class="logo">VPN MOYASHIELD</div>
+  <router-link to="/" class="logo">VPN MOYASHIELD</router-link>
         <input type="checkbox" id="nav-toggle" class="nav-toggle" />
         <label for="nav-toggle" class="nav-toggle-label" aria-label="Abrir menú de navegación">
           <span></span>
@@ -12,8 +12,12 @@
           <li><a href="#">Info</a></li>
         </ul>
         <div class="nav-actions">
-          <button class="btn login">Iniciar sesión</button>
-          <button class="btn register">Regístrate</button>
+          <router-link to="/login">
+            <button class="btn login">Iniciar sesión</button>
+          </router-link>
+          <router-link to="/register">
+            <button class="btn register">Regístrate</button>
+          </router-link>
         </div>
       </nav>
     </header>
@@ -29,6 +33,21 @@
 </script>
 
 <style scoped>
+ * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #23272f;
+}
+
+
+
+
 /* Fondo general */
 .vpn-bg {
   position: fixed;
