@@ -17,6 +17,9 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Nuevo campo para almacenar la clave pública de WireGuard
+    wireguard_public_key = Column(String, unique=True, nullable=True)
 
 
 class ConnectionLog(Base):
