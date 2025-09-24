@@ -8,8 +8,8 @@
           <span></span>
         </label>
         <ul class="nav-links">
-          <li><a href="#" class="active">Home</a></li>
-          <li><a href="#">Info</a></li>
+          <li><a href="#" class="active">informacion</a></li>
+          
         </ul>
         <div class="nav-actions">
           <router-link to="/login">
@@ -33,21 +33,7 @@
 </script>
 
 <style scoped>
- * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #23272f;
-}
-
-
-
-
+ 
 /* Fondo general */
 .vpn-bg {
   position: fixed;
