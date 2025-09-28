@@ -8,7 +8,7 @@
           <span></span>
         </label>
         <ul class="nav-links">
-          <li><a href="#" class="active">informacion</a></li>
+          <li><a href="#" class="active">INFORMACION</a></li>
           
         </ul>
         <div class="nav-actions">
@@ -81,6 +81,7 @@
   gap: clamp(1rem, 3vw, 2.5rem);
   margin: 0;
   padding: 0;
+  color: #fff;
 }
 .nav-links a {
   color: #fff;
@@ -88,7 +89,7 @@
   font-size: clamp(1rem, 2vw, 1.2rem);
   transition: color 0.2s;
 }
-.nav-links a.active,
+
 .nav-links a:hover {
   color: #00e6a8;
 }

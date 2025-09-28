@@ -12,10 +12,7 @@
         </label>
 
         <!-- LINKS -->
-        <ul class="nav-links">
-          
-          <li><router-link to="/informacion" active-class="active">Información</router-link></li>
-        </ul>
+       
 
         <!-- BOTONES -->
         <div class="nav-actions">
