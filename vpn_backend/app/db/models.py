@@ -17,6 +17,10 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    # CAMPOS PARA WIREGUARD
+    wg_public_key = Column(String, unique=True, nullable=True) # Clave pública del cliente
+    wg_private_key = Column(String, unique=True, nullable=True) # Clave privada del cliente
+    wg_ip_address = Column(String, unique=True, nullable=True) # La IP interna asignada (ej. 10.0.0.X)
 
 
 class ConnectionLog(Base):
