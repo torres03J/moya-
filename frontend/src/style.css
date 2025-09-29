@@ -1,79 +1,41 @@
++/* src/styles/variables.css */
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* 🎨 Colores base */
+  --color-fondo-principal: #23272f;
+  --color-fondo-secundario: #181a20;
+  --color-acento: #00e6a8;
+  --color-texto-principal: #ffffff;
+  --color-texto-suave: #bdbdbd;
+  --color-hover: #00e6a8;
+  --color-hover-texto: #23272f;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* 🔠 Tipografía */
+  --fuente-principal: 'Segoe UI', sans-serif;
+  --tamaño-titulo: 2.5rem;
+  --tamaño-subtitulo: 1.2rem;
+  --tamaño-texto: 1rem;
+  --tamaño-logo: clamp(1.2rem, 2vw, 2rem);
+  --tamaño-boton: clamp(0.95rem, 2vw, 1.1rem);
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  /* 📐 Espaciado */
+  --espaciado-xs: 0.5rem;
+  --espaciado-sm: 1rem;
+  --espaciado-md: 1.5rem;
+  --espaciado-lg: 2rem;
+  --espaciado-xl: 4rem;
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+  /* 🧱 Bordes y radios */
+  --radio-boton: 20px;
+  --radio-navbar: 24px;
+  --radio-barra: 2px;
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+  /* 💨 Transiciones */
+  --transicion-rapida: all 0.2s ease;
+  --transicion-media: all 0.3s ease;
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* 🌫️ Sombras neumórficas */
+  --sombra-suave: 6px 6px 16px #181a20, -6px -6px 16px #2e323a;
+  --sombra-intensa: 8px 8px 24px #181a20, -8px -8px 24px #2e323a;
+  --sombra-hover: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
