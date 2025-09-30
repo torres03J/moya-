@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    # Necesario para que WireGuard funcione a nivel de kernel
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      # PUID y PGID son para permisos. 1000 es común para el primer usuario en Linux.
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Caracas # Cambia a tu zona horaria
+      
+      # Variables del Servidor
+      - SERVERURL=${ENDPOINT_IP}
+      - SERVERPORT=${VPN_PORT}
+      - INTERNAL_SUBNET=${VPN_SUBNET}
+      
+      # WireGuard Server Config
+      - SERVERIP=${SERVER_ADDRESS} # 10.0.0.1/24
+      - PEERS=1 # Solo un cliente inicial, manejaremos el resto con nuestra config
+      - PEERDNS=8.8.8.8
+    
+    # Montar el archivo de configuración generado por Python (si lo usáramos)
+    # Aquí confiamos en que Python genera las claves y Docker solo usa las variables de entorno.
+    volumes:
+      - ./config:/config
+      - /lib/modules:/lib/modules
+      
+    ports:
+      - "${VPN_PORT}:${VPN_PORT}/udp"
+      
+    sysctls:
+      # Habilitar el reenvío de paquetes IP (NAT/Routing)
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+      
+    restart: unless-stopped
