@@ -12,7 +12,7 @@ app = Flask(__name__)
 API_KEY = os.getenv("API_SECRET_KEY")
 INTERFACE_NAME = "wg0" 
 CONFIG_DIR = "config"
-SERVER_CONF_PATH = os.path.join(CONFIG_DIR, "server.conf")
+SERVER_CONF_PATH = os.path.join(CONFIG_DIR, "wg0.conf")
 
 # Claves y Direcciones (Leídas del .env)
 SERVER_PRIVATE_KEY = os.getenv("SERVER_PRIVATE_KEY")
