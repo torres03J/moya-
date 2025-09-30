@@ -1,2 +1,11 @@
+# Entorno Virtual
 venv/
+
+# Archivos Sensibles de WireGuard
+*.key
 .env
+
+# Directorios de configuración generados y logs
+config/
+__pycache__/
+*.pyc

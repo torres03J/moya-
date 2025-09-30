@@ -50,20 +50,20 @@ def run_wg_command(action):
     # El servidor Docker solo se levanta/baja la primera vez o si hay cambios
     if action == "up":
         # Levantar el servidor Docker
-        subprocess.run(["docker-compose", "up", "-d"], check=True)
+        subprocess.run([f"sudo docker compose up -d", shell=True, check=True], check=True)
         print("[*] Servidor Docker WireGuard levantado.")
         
         # Activar la interfaz VPN en el host (donde corre el backend)
-        subprocess.run(["sudo", "wg-quick", "up", CLIENT_CONFIG_PATH], check=True)
+        subprocess.run(f"sudo wg-quick up {CLIENT_CONFIG_PATH}", shell=True, check=True)
         return "VPN activada."
     
     elif action == "down":
         # Desactivar la interfaz VPN
-        subprocess.run(["sudo", "wg-quick", "down", CLIENT_CONFIG_PATH], check=True)
+        subprocess.run(f"sudo wg-quick down {CLIENT_CONFIG_PATH}", shell=True, check=True)
         print("[*] Interfaz WireGuard desactivada.")
         
         # Bajar el servidor Docker (opcional, pero limpio)
-        subprocess.run(["docker-compose", "down"], check=True)
+        subprocess.run([f"sudo docker compose down", shell=True, check=True], check=True)
         return "VPN desactivada."
     
     return "Acción no válida."
