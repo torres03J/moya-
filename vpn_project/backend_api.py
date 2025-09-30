@@ -3,126 +3,118 @@ import os
 import sys
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-import tempfile 
 
-# Carga las variables de entorno (API_SECRET_KEY, claves, etc.)
+# --- CONFIGURACIÓN Y LECTURA DE ENV ---
 load_dotenv()
-
 app = Flask(__name__)
-# Variables de la API
-# USAMOS API_SECRET_KEY, que es la variable en tu .env
+
+# --- CONFIGURACIÓN ESTÁTICA ---
 API_KEY = os.getenv("API_SECRET_KEY")
-# Claves leídas directamente desde .env
-SERVER_PRIVATE_KEY = os.getenv("SERVER_PRIVATE_KEY")
-SERVER_PUBLIC_KEY = os.getenv("SERVER_PUBLIC_KEY")
-CLIENT_PRIVATE_KEY = os.getenv("CLIENT_PRIVATE_KEY")
-CLIENT_PUBLIC_KEY = os.getenv("CLIENT_PUBLIC_KEY")
-
-# Nombre de la interfaz
 INTERFACE_NAME = "wg0" 
-ENDPOINT_PORT = 51820
-SERVER_IP_CIDR = "10.0.0.1/24" # Dirección del servidor VPN
+CONFIG_DIR = "config"
+SERVER_CONF_PATH = os.path.join(CONFIG_DIR, "server.conf")
 
-# ===============================================
-# FUNCIONES DE CONFIGURACIÓN Y CONTROL DE WIREGUARD
-# ===============================================
+# Claves y Direcciones (Leídas del .env)
+SERVER_PRIVATE_KEY = os.getenv("SERVER_PRIVATE_KEY")
+CLIENT_PUBLIC_KEY = os.getenv("CLIENT_PUBLIC_KEY")
+CLIENT_PRIVATE_KEY = os.getenv("CLIENT_PRIVATE_KEY")
+SERVER_PUBLIC_KEY = os.getenv("SERVER_PUBLIC_KEY")
+ENDPOINT_IP = os.getenv("ENDPOINT_IP")
+VPN_PORT = os.getenv("VPN_PORT")
+SERVER_ADDRESS = os.getenv("SERVER_ADDRESS")
+CLIENT_ADDRESS = os.getenv("CLIENT_ADDRESS")
 
-def generate_server_config():
-    """Genera la cadena de configuración del servidor (wg0) con claves inyectadas."""
+
+def generate_config_files():
+    """Genera y guarda server.conf y client.conf."""
     
-    # Versión limpia sin PostUp/PostDown que causaban problemas de permiso
-    return f"""
+    if not os.path.exists(CONFIG_DIR):
+        os.makedirs(CONFIG_DIR)
+        
+    # --- Configuración del Servidor (Server.conf) ---
+    # Incluye PostUp/PostDown para habilitar NAT y IP forwarding.
+    # NOTA: Esto asume que la interfaz de salida de internet es 'eth0' (común en Linux/WSL).
+    SERVER_CONFIG = f"""
 [Interface]
 PrivateKey = {SERVER_PRIVATE_KEY}
-Address = {SERVER_IP_CIDR}
-ListenPort = {ENDPOINT_PORT}
+Address = {SERVER_ADDRESS}
+ListenPort = {VPN_PORT}
+PostUp = sysctl -w net.ipv4.ip_forward=1; iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = sysctl -w net.ipv4.ip_forward=0; iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 [Peer]
 PublicKey = {CLIENT_PUBLIC_KEY}
-AllowedIPs = 10.0.0.2/32
+AllowedIPs = {CLIENT_ADDRESS}
+"""
+    # --- Configuración del Cliente (Client.conf) ---
+    CLIENT_CONFIG = f"""
+[Interface]
+PrivateKey = {CLIENT_PRIVATE_KEY}
+Address = {CLIENT_ADDRESS}
+DNS = 8.8.8.8, 8.8.4.4
+
+[Peer]
+PublicKey = {SERVER_PUBLIC_KEY}
+Endpoint = {ENDPOINT_IP}:{VPN_PORT}
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
 """
 
+    with open(SERVER_CONF_PATH, "w") as f:
+        f.write(SERVER_CONFIG.strip())
+        
+    with open(os.path.join(CONFIG_DIR, "client.conf"), "w") as f:
+        f.write(CLIENT_CONFIG.strip())
+
+    return SERVER_CONF_PATH
+
+
 def run_wg_command(action):
-    """
-    Controla la interfaz WireGuard usando comandos de bajo nivel (ip link, wg setconf) 
-    para mayor estabilidad en entornos WSL/Virtualizados.
-    """
-    if action == "up":
-        # 1. GENERAR ARCHIVO DE CONFIGURACIÓN TEMPORAL
-        # Usamos suffix='.conf' y delete=False para que los comandos lo lean.
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.conf', delete=False) as tmp_file:
-            tmp_file.write(generate_server_config().strip())
-            temp_config_path = tmp_file.name
-
-        try:
-            # Comando 1: Crear la interfaz (ip link add)
-            subprocess.run(f"ip link add {INTERFACE_NAME} type wireguard", shell=True, check=True)
+    """Controla la interfaz WireGuard usando 'sudo wg-quick'."""
+    
+    if not os.path.exists(SERVER_CONF_PATH):
+        generate_config_files()
+        
+    try:
+        # Ejecutamos con 'sudo' para permisos de red.
+        command = f"sudo wg-quick {action} {SERVER_CONF_PATH}"
+        subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+        
+        if action == "up":
+            return f"Túnel VPN activado con éxito. Interfaz {INTERFACE_NAME} arriba."
+        if action == "down":
+            return f"Túnel VPN desactivado con éxito. Interfaz {INTERFACE_NAME} abajo."
+    
+    except subprocess.CalledProcessError as e:
+        error_message = e.stderr.strip()
+        # Manejo de errores comunes (para no fallar si ya está activo/inactivo)
+        if "Device or resource busy" in error_message and action == "up":
+            raise Exception("Error: El túnel ya está activo. Intenta desactivar primero.")
+        if "Cannot find device" in error_message and action == "down":
+            return "El túnel ya estaba inactivo."
             
-            # Comando 2: Cargar la configuración (wg setconf)
-            # El comando 'wg setconf' lee la configuración del archivo temporal.
-            subprocess.run(f"wg setconf {INTERFACE_NAME} {temp_config_path}", shell=True, check=True)
+        # Si falla por permisos, será necesario ingresar la contraseña.
+        if "Operation not permitted" in error_message:
+            raise Exception("Error de permisos: Debes ingresar tu contraseña cuando el sistema la pida en la terminal de Flask.")
             
-            # Comando 3: Asignar la IP y levantar la interfaz (ip address add & ip link set)
-            subprocess.run(f"ip address add {SERVER_IP_CIDR} dev {INTERFACE_NAME}", shell=True, check=True)
-            subprocess.run(f"ip link set up dev {INTERFACE_NAME}", shell=True, check=True)
+        raise Exception(f"Error de comando de VPN: {error_message}")
 
-            return f"VPN activada en interfaz {INTERFACE_NAME} usando comandos de bajo nivel."
-        
-        except subprocess.CalledProcessError as e:
-            # Limpieza forzada si falla la activación (intenta borrar la interfaz si se creó parcialmente)
-            subprocess.run(f"ip link delete {INTERFACE_NAME}", shell=True, check=False)
-            raise Exception(f"Error en la secuencia de activación de bajo nivel: {e.stderr.strip() if e.stderr else e}")
-        
-        except Exception as e:
-            raise Exception(f"Error desconocido en activación: {e}")
-            
-        finally:
-            # 4. LIMPIEZA: Aseguramos la eliminación del archivo temporal
-            os.remove(temp_config_path)
-
-    elif action == "down":
-        # Usamos el comando 'ip link delete' para eliminar la interfaz de red directamente, 
-        # sin depender de wg-quick ni de archivos de configuración.
-        command = f"ip link delete {INTERFACE_NAME}"
-        
-        # check=False es crucial para no fallar si la interfaz ya se ha eliminado.
-        result = subprocess.run(command, shell=True, check=False, capture_output=True, text=True)
-
-        # Verificamos si falló (returncode != 0)
-        if result.returncode != 0:
-            # Si el error es solo 'No such device', ignoramos el error, ya que la interfaz ya estaba abajo.
-            if "No such device" in result.stderr:
-                return f"VPN ya estaba desactivada o no encontrada ({INTERFACE_NAME})."
-            else:
-                # Si es un error real, lo volvemos a lanzar.
-                raise Exception(f"Error desconocido al desactivar: {result.stderr.strip()}")
-
-        return f"VPN desactivada en interfaz {INTERFACE_NAME}."
-        
-    return "Acción no válida."
-
-
-# ===============================================
-# RUTAS DE LA API Y AUTENTICACIÓN
-# ===============================================
+# --- RUTAS Y EJECUCIÓN ---
 
 @app.before_request
 def check_api_key():
+    # Lógica de autenticación simple.
     if request.path.startswith('/activate') or request.path.startswith('/deactivate'):
-        # Limpiamos la clave recibida para evitar problemas con espacios en blanco.
         received_key = request.headers.get('X-API-Key')
-        if received_key:
-            received_key = received_key.strip()
-        
-        # Limpiamos la clave esperada (leída del .env) para evitar problemas con comillas o espacios.
-        expected_key = API_KEY.strip().strip('"').strip("'")
-        
-        if received_key != expected_key:
-            return jsonify({"status": "error", "message": "Acceso denegado"}), 403
+        if received_key and received_key.strip() == API_KEY.strip():
+            return 
+        return jsonify({"status": "error", "message": "Acceso denegado"}), 403
 
 @app.route("/")
 def home():
-    return jsonify({"status": "ok", "message": "API VPN Server running locally."})
+    if not os.path.exists(SERVER_CONF_PATH):
+        generate_config_files()
+    return jsonify({"status": "ok", "message": "API VPN Server running locally. Config files generated."})
 
 @app.route("/activate", methods=["POST"])
 def activate():
@@ -141,9 +133,13 @@ def deactivate():
         return jsonify({"status": "error", "message": f"Error de desactivación: {e}"}), 500
 
 if __name__ == "__main__":
-    # Importante: Debes correr el script con permisos de administrador (sudo) para usar comandos de red.
-    if sys.platform != "win32" and os.geteuid() != 0:
-        print("ERROR: Debes ejecutar este script con sudo/permisos de administrador (ej: sudo python3 backend_api.py)")
+    print("Iniciando la generación de archivos de configuración...")
+    try:
+        generate_config_files()
+        print(f"Archivos de configuración generados en la carpeta '{CONFIG_DIR}/'.")
+    except Exception as e:
+        print(f"ERROR al generar archivos: {e}")
         sys.exit(1)
         
-    app.run(host='0.0.0.0', port=8080)
+    print("\nAPI de control VPN iniciada.")
+    app.run(host='127.0.0.1', port=8080)
