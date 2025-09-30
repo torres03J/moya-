@@ -3,50 +3,38 @@
     <header>
       <nav class="navbar" aria-label="Main navigation">
         <router-link to="/" class="logo">VPN MOYASHIELD</router-link>
-        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+      
         <label for="nav-toggle" class="nav-toggle-label" aria-label="Abrir menú de navegación">
           <span></span>
         </label>
-        <ul class="nav-links">
-          <li><a href="#" class="active">INFORMACION</a></li>
-        </ul>
         <div class="nav-actions">
-          <router-link to="/login">
-            <button class="btn login">Iniciar sesión</button>
-          </router-link>
-          <router-link to="/register">
-            <button class="btn register">Regístrate</button>
-          </router-link>
         </div>
       </nav>
     </header>
 
     <main class="home-container">
-      <h1>Bienvenido a VPN MOYASHIELD</h1>
-      <p>Protege tu privacidad y navega seguro en cualquier red.</p>
-
+      
       <!-- 🔗 Sección promocional -->
       <section class="promo-section">
         <div class="promo-content">
           <div class="promo-left">
-            <img src="/LOGO.png" alt="Persona usando smartphone" class="promo-image" />
+            <img src="/LOGO.png" alt="escudo vpn" class="promo-image" />
           </div>
           <div class="promo-right">
-            <h2>Accede a servidores de todo el mundo</h2>
+            <h1>NAVEGA DE FORMA SEGURA </h1>
             <ul class="features-list">
-              <li>Servidores de alta velocidad para una conectividad global excepcional</li>
+              <li>conexion por tunel a servidor </li>
               <li>Acceda libremente a contenidos globales</li>
               <li>Conexiones más rápidas y estables</li>
             </ul>
             <div class="highlights">
-              <span>✔ Vía de luz</span>
-              <span>✔ 105 Países</span>
-              <span>✔ 10 Gbps</span>
+              <span>✔ ideal para empresas </span>
+              <span>✔ facil uso </span>
+              <span>✔ seguridad a red publicas</span>
               <span>✔ Servidor de confianza</span>
             </div>
             <div class="cta-buttons">
-              <a href="#" class="btn">Servidores</a>
-              <a href="#" class="btn secondary">Elige tu servidor</a>
+              <a href="#" class="btn">configurar </a>
             </div>
           </div>
         </div>
@@ -60,16 +48,17 @@
 </script>
 
 <style scoped>
-/* Fondo general */
-html,
-body {
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
   padding: 0;
   background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
   overflow-x: hidden;
+  font-family: sans-serif;
 }
-
-
 
 .vpn-bg {
   width: 100%;
@@ -77,12 +66,9 @@ body {
   background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   align-items: center;
-  
 }
 
-/* Navegación moderna y responsive */
 .navbar {
   width: 100%;
   display: flex;
@@ -96,12 +82,14 @@ body {
   position: relative;
   z-index: 10;
 }
+
 .logo {
   color: #00e6a8;
   font-size: clamp(1.2rem, 2vw, 2rem);
   font-weight: bold;
   letter-spacing: 1px;
 }
+
 .nav-links {
   list-style: none;
   display: flex;
@@ -109,19 +97,23 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .nav-links a {
   color: #fff;
   text-decoration: none;
   font-size: clamp(1rem, 2vw, 1.2rem);
   transition: color 0.2s;
 }
+
 .nav-links a:hover {
   color: #00e6a8;
 }
+
 .nav-actions {
   display: flex;
   gap: 1rem;
 }
+
 .btn {
   padding: 0.5em 1.7em;
   border-radius: 20px;
@@ -133,19 +125,12 @@ body {
   box-shadow: 6px 6px 16px #181a20, -6px -6px 16px #2e323a;
   border: 2px solid #00e6a8;
 }
-.btn.login:hover,
-.btn.register:hover {
+
+.btn:hover {
   background: #00e6a8;
   color: #23272f;
 }
 
-/* Toggle para menú móvil */
-.nav-toggle,
-.nav-toggle-label {
-  display: none;
-}
-
-/* Contenido principal */
 .home-container {
   flex: 1;
   display: flex;
@@ -154,30 +139,30 @@ body {
   justify-content: flex-start;
   width: 100%;
   padding: 4rem 2rem;
-  box-sizing: border-box;
-  z-index: 1;
+  max-width: 1200px;
 }
+
 h1 {
   color: #00e6a8;
   margin-bottom: 1.5rem;
   font-size: 2.5rem;
   text-align: center;
 }
+
 p {
-  color: #bdbdbd;
+  color: #f3f0f0;
   font-size: 1.2rem;
   text-align: center;
   max-width: 600px;
 }
 
-/* 🔗 Estilos para sección promocional */
 .promo-section {
   width: 100%;
   padding: 4rem 2rem;
-  box-sizing: border-box;
   background: #23272f;
   color: #ffffff;
 }
+
 .promo-content {
   display: flex;
   flex-wrap: wrap;
@@ -186,40 +171,52 @@ p {
   gap: 2rem;
   align-items: center;
 }
+
 .promo-left {
   flex: 1;
   text-align: center;
 }
+
 .promo-image {
   max-width: 100%;
   height: auto;
   border-radius: 24px;
   box-shadow: 6px 6px 16px #181a20, -6px -6px 16px #2e323a;
 }
+
 .promo-right {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 .promo-right h2 {
+  
   font-size: 2rem;
   color: #00e6a8;
   margin-bottom: 1.5rem;
 }
+
 .features-list {
   list-style: none;
   padding: 0;
   margin-bottom: 1.5rem;
 }
+
 .features-list li {
   margin-bottom: 0.75rem;
   font-size: 1.1rem;
   color: #bdbdbd;
 }
+
 .highlights {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 2rem;
 }
+
 .highlights span {
   background: #00e6a8;
   color: #23272f;
@@ -228,19 +225,62 @@ p {
   font-size: 0.95rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
 .cta-buttons {
   display: flex;
   gap: 1rem;
 }
+
 .btn.secondary {
   background: #181a20;
   color: #00e6a8;
   border: 2px solid #00e6a8;
 }
+
 .btn.secondary:hover {
   background: #00e6a8;
   color: #23272f;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    display: none;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-toggle-label {
+    display: block;
+    cursor: pointer;
+    color: #00e6a8;
+    font-size: 1.5rem;
+  }
+
+  .promo-content {
+    flex-direction: column;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+  .cta-buttons {
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Esto es clave para que el botón se pueda centrar */
+  margin-top: 1rem;
+}
+
+
+}
 
 </style>

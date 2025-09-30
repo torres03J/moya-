@@ -59,11 +59,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  min-height: 100vh;
   background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: clamp(1rem, 5vw, 2rem);
   box-sizing: border-box;
   z-index: 0;
 }
@@ -71,64 +71,65 @@
 /* ===== NAVBAR ===== */
 .navbar {
   width: 100%;
+  max-width: 1200px;
   display: flex;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
-  padding: 1.2rem 2rem;
+  padding: clamp(1rem, 4vw, 2rem);
   background: #23272f;
   box-shadow: 8px 8px 24px #181a20, -8px -8px 24px #2e323a;
   border-radius: 24px;
-  position: relative;
   margin-top: 2rem;
+  position: relative;
   z-index: 10;
 }
+
 .logo {
   color: #00e6a8;
   font-size: clamp(1.2rem, 2vw, 2rem);
   font-weight: bold;
   letter-spacing: 1px;
 }
+
 .nav-links {
   list-style: none;
   display: flex;
-  gap: clamp(1rem, 3vw, 2.5rem);
+  gap: 2rem;
   margin: 0;
   padding: 0;
 }
+
 .nav-links a {
   color: #fff;
   text-decoration: none;
   font-size: clamp(1rem, 2vw, 1.2rem);
   transition: color 0.2s;
 }
+
 .nav-links a.active,
 .nav-links a:hover {
   color: #00e6a8;
 }
+
 .nav-actions {
   display: flex;
   gap: 1rem;
 }
+
 .btn {
   padding: 0.5em 1.7em;
-  border: none;
   border-radius: 20px;
   font-size: clamp(0.95rem, 2vw, 1.1rem);
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  outline: none;
   background: #23272f;
   color: #00e6a8;
   box-shadow: 6px 6px 16px #181a20, -6px -6px 16px #2e323a;
   border: 2px solid #00e6a8;
 }
-.btn.login,
-.btn.register {
-  background: #23272f;
-  color: #00e6a8;
-}
-.btn.login:hover,
-.btn.register:hover {
+
+.btn:hover {
   background: #00e6a8;
   color: #23272f;
 }
@@ -137,6 +138,7 @@
 .nav-toggle {
   display: none;
 }
+
 .nav-toggle-label {
   display: none;
   flex-direction: column;
@@ -145,6 +147,7 @@
   height: 32px;
   justify-content: center;
 }
+
 .nav-toggle-label span,
 .nav-toggle-label span::before,
 .nav-toggle-label span::after {
@@ -156,14 +159,17 @@
   position: relative;
   transition: all 0.3s;
 }
+
 .nav-toggle-label span::before,
 .nav-toggle-label span::after {
   content: '';
   position: absolute;
 }
+
 .nav-toggle-label span::before {
   top: -10px;
 }
+
 .nav-toggle-label span::after {
   top: 10px;
 }
@@ -175,18 +181,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
+  padding: clamp(2rem, 5vw, 3rem) 1rem;
   width: 100%;
   max-width: 420px;
   margin: auto;
 }
+
 .login-container h2 {
   color: #00e6a8;
   margin-bottom: 1.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  text-align: center;
 }
+
 form {
   background: #2e323a;
-  padding: 2rem;
+  padding: clamp(1.5rem, 4vw, 2rem);
   border-radius: 18px;
   box-shadow: 6px 6px 16px #181a20, -6px -6px 16px #2e323a;
   width: 100%;
@@ -194,14 +204,18 @@ form {
   flex-direction: column;
   gap: 1rem;
 }
+
 .input-group {
   display: flex;
   flex-direction: column;
 }
+
 label {
   color: #bdbdbd;
   margin-bottom: 0.5rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
+
 input {
   padding: 0.8rem;
   border-radius: 12px;
@@ -209,10 +223,13 @@ input {
   outline: none;
   background: #23272f;
   color: #fff;
+  font-size: 1rem;
 }
+
 input::placeholder {
   color: #aaa;
 }
+
 .btn.submit {
   margin-top: 1rem;
   padding: 0.8rem;
@@ -222,9 +239,11 @@ input::placeholder {
   border-radius: 12px;
   border: none;
 }
+
 .btn.submit:hover {
   background: #00c792;
 }
+
 .login-link {
   margin-top: 1rem;
   color: #00e6a8;
@@ -235,14 +254,21 @@ input::placeholder {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .nav-links,
   .nav-actions {
     display: none;
   }
+
   .nav-toggle-label {
     display: flex;
     margin-left: auto;
   }
+
   .nav-toggle:checked ~ .nav-links,
   .nav-toggle:checked ~ .nav-actions {
     display: flex;
@@ -257,8 +283,17 @@ input::placeholder {
     gap: 1.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
+
   .nav-toggle:checked ~ .nav-actions {
     top: 140px;
+  }
+
+  .login-container {
+    padding: 2rem 1rem;
+  }
+
+  form {
+    padding: 1.5rem;
   }
 }
 </style>
