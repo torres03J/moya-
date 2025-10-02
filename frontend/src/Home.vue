@@ -75,7 +75,7 @@ import axios from 'axios';
 
 // Asegúrate de que el archivo .env tenga VITE_API_URL y VITE_API_KEY
 const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080';
-const apiKey = import.meta.env.VITE_API_KEY || 'ClaveVPNUni2025';
+const apiKey = 'ClaveVPNUni2025';
 
 // --- ESTADO REACTIVO ---
 const isVpnConnected = ref(false); 

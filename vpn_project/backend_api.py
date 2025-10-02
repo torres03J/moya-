@@ -3,12 +3,27 @@ import os
 import sys
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # --- CONFIGURACIÓN DE LA API ---
 
 # Cargar variables de entorno
 load_dotenv()
 app = Flask(__name__)
+
+# Permite peticiones desde el puerto de desarrollo de Vue.js (cambia el puerto si es diferente)
+# El asterisco "*" permite todos los orígenes, pero es más seguro especificar el de Vue.js.
+CORS(app, 
+    resources={r"/*": {
+        "origins": [
+            "http://localhost:5173", # Origen de Vue/Vite (cambia si usas otro puerto)
+            "http://127.0.0.1:5173"
+        ],
+        "allow_headers": ["Content-Type", "X-API-Key"], # 🚨 CLAVE: Permitir X-API-Key
+        "supports_credentials": True,
+        "methods": ["GET", "POST", "OPTIONS"]
+    }})  
+
 # Asegúrate de que esta clave coincida con la de tu .env
 API_KEY = os.getenv("API_SECRET_KEY")
 
@@ -66,13 +81,20 @@ def control_tailscale(action):
 
 @app.before_request
 def check_api_key():
-    """Verifica la clave API para todas las rutas de control."""
+    """Verifica la clave API para todas las rutas de control, IGNORANDO OPTIONS."""
+    
+    # 🚨 CLAVE: Ignorar la verificación si el método es OPTIONS (requerido por CORS)
+    if request.method == 'OPTIONS':
+        return 
+        
     if request.path == '/':
         return 
         
     received_key = request.headers.get('X-API-Key')
     if received_key and received_key.strip() == API_KEY.strip():
         return 
+    
+    # Si no es OPTIONS y falla la clave, devuelve 403
     return jsonify({"status": "error", "message": "Acceso denegado. Clave API incorrecta."}), 403
 
 @app.route("/")
